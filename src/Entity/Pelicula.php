@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PeliculaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PeliculaRepository::class)]
@@ -24,6 +25,11 @@ class Pelicula
 
     #[ORM\Column]
     private ?int $valoracion = null;
+
+    public function __construct()
+    {
+        $this -> pelicula = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {

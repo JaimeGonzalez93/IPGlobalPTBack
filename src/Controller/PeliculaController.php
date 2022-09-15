@@ -7,11 +7,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Pelicula;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use App\Repository\PeliculaRepository;
 
+/**
+ * Class PeliculaController
+ */
 
 class PeliculaController extends AbstractController
 {
@@ -28,12 +30,48 @@ class PeliculaController extends AbstractController
     /**
      * @Route("/peliculas", name="obtenerPeliculas", methods= {"GET"})
      */
-    public function getPeliculas():JsonResponse
+    public function getPeliculas(EntityManagerInterface $doctrine):JsonResponse
     {
-        $response = $this -> client -> request('GET','https://api.themoviedb.org/3/search/movie?api_key=8f781d70654b5a6f2fa69770d1d115a3&query=harry+potter');
-        $respuesta = $response ->getContent();
-        $peliculas = json_decode($respuesta);
-        return $this->json($peliculas);
+        $datosApi = $this -> client -> request('GET','https://api.themoviedb.org/3/search/movie?api_key=8f781d70654b5a6f2fa69770d1d115a3&query=harry+potter');
+        
+        $repositorio = $doctrine -> getRepository(pelicula::class);
+        $peliculas = $repositorio -> findAll();
+
+        $data=[];
+    
+        if($peliculas) {
+                foreach ($peliculas as $pelicula)
+                {
+                    $data[] = [
+                            'id' => $pelicula->getId(),
+                            'titulo' => $pelicula ->getTitulo(),
+                            'fechaEstreno' => $pelicula->getFechaEstreno(),
+                            'poster' => $pelicula -> getPoster(),
+                            'valoracion' => $pelicula -> getValoracion(),
+                    ];
+                };
+            return $this -> json($data);
+            
+        };
+
+        $contenidoApi = $datosApi->getContent();
+        $data = json_decode($contenidoApi, true);
+
+        var_dump ($data["results"]);
+
+        foreach($data["results"] as $pelicula)
+        {
+           $new = new Pelicula;
+           $new 
+                ->setTitulo($pelicula['title'])
+                ->setPoster($pelicula['poster_path'])
+                ->setFechaEstreno($pelicula['release_date'])
+                ->setValoracion($pelicula['vote_average']);
+            
+                $doctrine-> persist($new);
+                $doctrine-> flush();
+        };
+        
     }
 
     //Obtener detalle de peliculas

@@ -61,8 +61,8 @@ class PeliculaController extends AbstractController
 
         foreach($data["results"] as $pelicula)
         {
-           $new = new Pelicula;
-           $new 
+            $new = new Pelicula;
+            $new 
                 ->setTitulo($pelicula['title'])
                 ->setPoster($pelicula['poster_path'])
                 ->setFechaEstreno($pelicula['release_date'])
@@ -76,31 +76,11 @@ class PeliculaController extends AbstractController
 
     //Obtener detalle de peliculas
 
-    //Almacenar peliculas
-    /**
-     * @Route("/AlmacenarPelicula/{titulo}/{poster}/{fechaEstreno}/{valoracionApi}"), name="Almacenar_pelicula", methods={"POST"})
-     */
-    public function almacenarPeliculas (ManagerRegistry $doctrine, int $id, $titulo, $poster, $fechaEstreno, $valoracion)
-    {
-        $pelicula = $doctrine -> getRepository(Pelicula::class) -> find($id);
-
-        if($pelicula)
-        {
-            return "Ya existe la pelicula";
-        }
-
-        $newPelicula = new Pelicula();
-        $newPelicula -> setTitulo($titulo);
-        $newPelicula -> setPoster ($poster);
-        $newPelicula -> setFechaEstreno($fechaEstreno);
-        $newPelicula -> setValoracion($valoracion);
-    }
-
     /**
      * @Route("/pelicula/{id}", name="pelicula_show", methods= {"GET"})
      */
 
-    public function peliculaDetalle(ManagerRegistry $doctrine, int $id): Response
+    public function peliculaDetalle(ManagerRegistry $doctrine, int $id): JsonResponse
     {
         $pelicula = $doctrine -> getRepository(Pelicula::class) -> find($id);
 
@@ -121,7 +101,7 @@ class PeliculaController extends AbstractController
     //Enviar valoración a api TMDB
 
     /**
-     * @Route("/pelicula/{id}/{valoracion}", name="pelicula_valoracion", methods= {"POST"})
+     * @Route("/valoracion/{id}/{valoracion}", name="pelicula_valoracion", methods= {"POST"})
      */
 
     public function valoracion (int $id, int $valoracion)
@@ -137,11 +117,4 @@ class PeliculaController extends AbstractController
     );
         return $response;
     }
-
-    /**
-     * 
-     */
-
-    
-
 }

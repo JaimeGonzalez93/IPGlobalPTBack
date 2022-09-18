@@ -9,3 +9,6 @@ archivo json y el código que necesitamos se encuentra con la clave: guest_sessi
 unos dias será necesario solicitar el código de nuevo. 
 
 También se ha intentado hacer algo de testing mediante PHPUnit.
+
+Para iniciar la aplicación, basta con clonar el repositorio, reemplazar el código de invitado, reemplazar la URL a la base de datos en el archivo .env.local y ejecutar
+el comando symfony server:start
